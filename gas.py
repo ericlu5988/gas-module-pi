@@ -102,8 +102,8 @@ def main():
     print("|  Back (Menu)  |  Next Item  |  Enter  |")
     print("Press CTRL+C to abort")
     try:
-        buzz, display = init_system()
         while True:
+            buzz, display = init_system()
             menu, display = main_menu(display)
             # start Calibration
             mq, display = init_gas_module(menu, display)
@@ -125,6 +125,7 @@ def main():
                 time.sleep(0.1)
                 if GPIO.input(BUTTON_BACK) == GPIO.HIGH:
                     print("\nReturn to main menu\n")
+                    GPIO.cleanup()
                     break
     except:
         print("\nAbort by User")
