@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-from mq import *
 import RPi.GPIO as GPIO
-import sys, buzzer, lcd, time
+import mq1, mq2, sys, buzzer, lcd, time
 
 # define light mapping
 GREEN = 27
@@ -27,14 +26,16 @@ def init_system():
     display = lcd.LCD_Display(LCD_RS, LCD_E, LCD_D4, LCD_D5, LCD_D6, LCD_D7)
     return buzz, display
 
-def init_gas_module(display):
-    # Initialize Gas Module
+def init_gas_module(selection, display):
     print("Press CTRL+C to abort.")
     display.lcd_string(f"Gas Module", 1)
     display.lcd_string(f"Calibrating...", 2)
-    mq = MQ();
+    if selection == 1:
+        mq = mq2.MQ()
+    else:
+        mq = mq1.MQ()
     GPIO.output(GREEN,GPIO.HIGH)
-    return mq
+    return mq, display
 
 def start_alert(buzz):
     GPIO.output(GREEN,GPIO.LOW)
@@ -56,10 +57,20 @@ def display_lcd_status(display, lpg, co, smoke):
     display.lcd_string(f"Smoke: {smoke}", 2)
     return display
 
-# Main
+def main_menu(display): 
+    selection = False
+    cursor = 0
+    display.lcd_string(f"Select Module", 1)
+    display.lcd_string(f"MQ2:LPG,CO,Smoke", 2)
+    time.sleep(3)
+    selection = 1
+    return selection, display
+
 def main():
     buzz, display = init_system()
-    mq = init_gas_module(display)
+    selection, display = main_menu(display)
+
+    mq, display = init_gas_module(selection, display)
 
     try:
         # Start Monitoring
