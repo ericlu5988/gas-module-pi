@@ -13,6 +13,11 @@ LCD_D4 = 13
 LCD_D5 = 6
 LCD_D6 = 5
 LCD_D7 = 16
+BUTTON_BACK = 23
+BUTTON_NEXT_ITEM = 24
+BUTTON_ENTER = 25
+option = None
+selection = None
 
 def init_system():
     # basic setup
@@ -24,13 +29,16 @@ def init_system():
     buzz = buzzer.Buzzer()
     # setup LCD screen
     display = lcd.LCD_Display(LCD_RS, LCD_E, LCD_D4, LCD_D5, LCD_D6, LCD_D7)
+    # setup buttons
+    GPIO.setup(BUTTON_BACK, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(BUTTON_NEXT_ITEM, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(BUTTON_ENTER, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     return buzz, display
 
-def init_gas_module(selection, display):
-    print("Press CTRL+C to abort.")
-    display.lcd_string(f"Gas Module", 1)
+def init_gas_module(menu, display):
+    display.lcd_string(f"{menu[selection]}", 1)
     display.lcd_string(f"Calibrating...", 2)
-    if selection == 1:
+    if selection == 0:
         mq = mq2.MQ()
     else:
         mq = mq1.MQ()
@@ -58,43 +66,69 @@ def display_lcd_status(display, lpg, co, smoke):
     return display
 
 def main_menu(display): 
-    selection = False
-    cursor = 0
-    display.lcd_string(f"Select Module", 1)
-    display.lcd_string(f"MQ2:LPG,CO,Smoke", 2)
-    time.sleep(3)
-    selection = 1
-    return selection, display
+    global selection
+    global option
+    selection = None
+    menu = ["MQ2:LPG,CO,Smoke","MQ1:LPG,CO,Smoke"]
+    option = 0
+
+    def button_callback(button):
+        global option
+        global selection
+        if button == BUTTON_ENTER:
+            selection = option
+        elif button == BUTTON_NEXT_ITEM:
+            option = (option + 1) % len(menu)
+
+    display.lcd_string(f"Select Module", 1)    
+    display.lcd_string(menu[option], 2)
+    GPIO.remove_event_detect(BUTTON_NEXT_ITEM)
+    GPIO.remove_event_detect(BUTTON_ENTER)
+    GPIO.add_event_detect(BUTTON_NEXT_ITEM,GPIO.RISING,callback=button_callback)
+    GPIO.add_event_detect(BUTTON_ENTER,GPIO.RISING,callback=button_callback)
+    while selection == None: 
+        display.lcd_string(menu[option], 2)    
+        time.sleep(0.05)
+    return menu, display
+
+def cleanup(display):
+    display.lcd_string(f"", 1)
+    display.lcd_string(f"", 2)
+    GPIO.cleanup()
 
 def main():
-    buzz, display = init_system()
-    selection, display = main_menu(display)
-
-    mq, display = init_gas_module(selection, display)
-
+    print("Select Gas Module to run using the button and LCD screen")
+    print("Button Layout:")
+    print("|  Back (Menu)  |  Next Item  |  Enter  |")
+    print("Press CTRL+C to abort")
     try:
-        # Start Monitoring
+        buzz, display = init_system()
         while True:
-            perc = mq.MQPercentage()
-            # Alert if over threshold
-            if perc["GAS_LPG"] > 50 or perc["SMOKE"] > 100:
-                start_alert(buzz)  
-            # Else do not alert
-            else:
-                stop_alert()
-            # Display status
-            lpg = '{:>4}'.format(round(perc["GAS_LPG"]))
-            smoke = '{:>5}'.format(round(perc["CO"]))
-            co = '{:>4}'.format(round(perc["SMOKE"]))
-            display = display_lcd_status(display, lpg, co, smoke)
-            display_console_status(lpg, co, smoke)
-            time.sleep(0.1)
-
+            menu, display = main_menu(display)
+            # start Calibration
+            mq, display = init_gas_module(menu, display)
+            # Start Monitoring
+            while True:
+                perc = mq.MQPercentage()
+                # Alert if over threshold
+                if perc["GAS_LPG"] > 50 or perc["SMOKE"] > 100:
+                    start_alert(buzz)  
+                # Else do not alert
+                else:
+                    stop_alert()
+                # Display status
+                lpg = '{:>4}'.format(round(perc["GAS_LPG"]))
+                smoke = '{:>5}'.format(round(perc["CO"]))
+                co = '{:>4}'.format(round(perc["SMOKE"]))
+                display = display_lcd_status(display, lpg, co, smoke)
+                display_console_status(lpg, co, smoke)
+                time.sleep(0.1)
+                if GPIO.input(BUTTON_BACK) == GPIO.HIGH:
+                    print("\nReturn to main menu\n")
+                    break
     except:
-        print("\nAbort by user")
-        display.lcd_string(f"", 1)
-        display.lcd_string(f"", 2)
-        GPIO.cleanup()
+        print("\nAbort by User")
+        cleanup(display)
 
 if __name__ == "__main__":
     main()
