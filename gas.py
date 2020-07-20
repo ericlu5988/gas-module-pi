@@ -2,6 +2,11 @@
 import RPi.GPIO as GPIO
 import mq1, mq2, sys, buzzer, lcd, time
 
+# define threshold
+LPG_THRESH = 2000
+CO_THRESH = 100
+SMOKE_THRESH = 200
+
 # define light mapping
 GREEN = 27
 RED = 17
@@ -103,15 +108,17 @@ def main():
     print("Press CTRL+C to abort")
     try:
         while True:
+            # initialize buzzer
             buzz, display = init_system()
+            # display menu and wait for users to select a module
             menu, display = main_menu(display)
-            # start Calibration
+            # start calibration on selected module
             mq, display = init_gas_module(menu, display)
             # Start Monitoring
             while True:
                 perc = mq.MQPercentage()
                 # Alert if over threshold
-                if perc["GAS_LPG"] > 50 or perc["SMOKE"] > 100:
+                if perc["GAS_LPG"] > LPG_THRESH or perc["CO"] > CO_THRESH or perc["SMOKE"] > SMOKE_THRESH:
                     start_alert(buzz)  
                 # Else do not alert
                 else:
@@ -128,8 +135,8 @@ def main():
                     GPIO.cleanup()
                     break
     except:
-        print("\nAbort by User")
-        cleanup(display)
+         print("\nAbort by User")
+         cleanup(display)
 
 if __name__ == "__main__":
     main()
