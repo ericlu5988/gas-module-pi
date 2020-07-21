@@ -4,9 +4,9 @@
 
 ### Installation
 
-1. Clone the repository to /home/pi direcotry
+#### 1. Clone the repository to /home/pi direcotry
 
-2. Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
+#### 2. Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
 
 `sudo cp gas-module/gas-module-pi.service /etc/systemd/system`
 
