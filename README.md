@@ -4,16 +4,18 @@
 
 ### Installation
 
-#### Clone the repository to /home/pi direcotry
+1. Clone the repository to /home/pi direcotry
 
-#### Run the gas module manually with /usr/bin/env python3 /home/pi/gas-module/gas.py
-
-#### Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
+2. Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
 `sudo cp gas-module/gas-module-pi.service /etc/systemd/system`
 
 `sudo systemctl start gas-module-pi.service`
 
 `sudo systemctl enable gas-module-pi.service`
+
+## Running Manually
+
+Run the gas module manually with `/usr/bin/env python3 /home/pi/gas-module/gas.py`
 
 ## Troubleshooting and Maintenance
 `sudo systemctl stop gas-module-pi.service`
