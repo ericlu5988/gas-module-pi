@@ -1,4 +1,4 @@
-# gas-module
+# gas-module-pi
 
 ## Python Gas Module with Raspberry Pi
 
