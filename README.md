@@ -1,14 +1,19 @@
 # gas-module
-Python Gas Module with Raspberry Pi
 
-Clone the repository to /home/pi direcotry
+##Python Gas Module with Raspberry Pi
 
-Run the gas module manually with /usr/bin/env python3 /home/pi/gas-module/gas.py
+###Clone the repository to /home/pi direcotry
 
-Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
-sudo cp gas-module/gas-module-pi.service /etc/systemd/system
-sudo systemctl start gas-module-pi.service
-sudo systemctl enable gas-module-pi.service
+###Run the gas module manually with /usr/bin/env python3 /home/pi/gas-module/gas.py
 
-To stop the gas module for troubleshooting and maintenance
-sudo systemctl stop gas-module-pi.service
+###Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
+`<sudo cp gas-module/gas-module-pi.service /etc/systemd/system>`
+`<sudo systemctl start gas-module-pi.service>`
+`<sudo systemctl enable gas-module-pi.service>`
+
+###To stop the gas module for troubleshooting and maintenance
+`<sudo systemctl stop gas-module-pi.service>`
+
+##Wiring Diagram
+
+![Wiring Diagram](/blob/master/Pi-Gas-Module.png)
