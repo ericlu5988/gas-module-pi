@@ -10,7 +10,9 @@
 
 #### Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
 `sudo cp gas-module/gas-module-pi.service /etc/systemd/system`
+
 `sudo systemctl start gas-module-pi.service`
+
 `sudo systemctl enable gas-module-pi.service`
 
 ## Troubleshooting and Maintenance
