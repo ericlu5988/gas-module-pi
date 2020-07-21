@@ -16,4 +16,4 @@
 
 ##Wiring Diagram
 
-![Wiring Diagram](/blob/master/Pi-Gas-Module.png)
+![Wiring Diagram](https://github.com/ericlu5988/gas-module-pi/blob/master/Pi-Gas-Module.png)
