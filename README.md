@@ -6,7 +6,7 @@
 
 ### Run the gas module manually with /usr/bin/env python3 /home/pi/gas-module/gas.py
 
-## #Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
+### Create a daemon for the gas module by copying the gas-module-pi.service to /etc/systemd/system
 `sudo cp gas-module/gas-module-pi.service /etc/systemd/system`
 `sudo systemctl start gas-module-pi.service`
 `sudo systemctl enable gas-module-pi.service`
