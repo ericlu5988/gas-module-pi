@@ -1,6 +1,6 @@
 # gas-module-pi
 
-## Python Gas Module with Raspberry Pi
+## Raspberry Pi Gas Detection Module
 
 ### Installation
 
